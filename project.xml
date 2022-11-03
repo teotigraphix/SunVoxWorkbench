@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 
+
+SunVox Workbench
+
+Copyright 2022 Teoti Graphix, LLC. All Rights Reserved.
+
+This program is free software. You can redistribute and/or modify it in
+accordance with the terms of the accompanying license agreement.
+
+-->
+<project
+    xmlns="http://lime.software/project/1.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+	<meta title="SunVoxWorkbench" package="com.teotigraphix.SunVoxWorkbench" version="0.0.1" company="Teoti Graphix, LLC"/>
+	<app main="Main"/>
+	
+	<window allow-high-dpi="true"/>
+	<window fps="60"/>
+	<window fps="0" if="html5"/>
+	
+	<source path="src"/>
+
+	<haxelib name="actuate"/>
+	<haxelib name="openfl"/>
+	<haxelib name="feathersui"/>
+	<haxelib name="signals"/>
+	<haxelib name="robotlegs"/>
+	<haxelib name="sunvox-sdk"/>
+	<haxelib name="teoti-haxe-sdk"/>
+
+	<icon path="assets/icons/icon.svg"/>
+
+	<template path="templates/index.html" rename="index.html" if="html5" />
+
+</project>
