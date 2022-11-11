@@ -9,6 +9,9 @@
 
 package sunvox.player.app.config;
 
+import openfl.events.IEventDispatcher;
+import openfl.events.Event;
+import openfl.events.EventDispatcher;
 import org.swiftsuspenders.utils.DescribedType;
 import robotlegs.bender.extensions.contextView.ContextView;
 import robotlegs.bender.extensions.eventCommandMap.api.IEventCommandMap;
@@ -21,10 +24,13 @@ import sunvox.player.context.ui.screen.LoadingScreen;
 import sunvox.player.context.ui.screen.mediators.LoadingScreenMediator;
 
 class AppConfig implements DescribedType implements IConfig {
+	public static final TAG:String = "AppConfig";
+
 	//-----------------------------------------------------------------------------
 	// Injection :: Variables
 	//-----------------------------------------------------------------------------
 	@inject public var __injector:IInjector;
+	@inject public var __eventDispatcher:IEventDispatcher;
 	@inject public var __mediatorMap:IMediatorMap;
 	@inject public var __commandMap:IEventCommandMap;
 	@inject public var __contextView:ContextView;
@@ -33,13 +39,34 @@ class AppConfig implements DescribedType implements IConfig {
 	// Public :: Methods
 	//-----------------------------------------------------------------------------
 	public function configure():Void {
-		trace("AppConfig", "configure()");
+		trace(TAG, "configure()");
 
+		// TODO Initialize assets
+
+		// Map
+		mapApplication();
+		mapModel();
+		mapMediators();
+		mapCommands();
+		mapServices();
+
+		__eventDispatcher.dispatchEvent(new Event("configureComplete"));
+	}
+
+	private function mapApplication():Void {
 		__injector.map(ApplicationController).asSingleton();
+	}
 
+	private function mapServices():Void {}
+
+	private function mapModel():Void {}
+
+	private function mapCommands():Void {
+		// __commandMap.map(AppEvent.AUDIO_ENGINE_STARTUP).toCommand(AudioEngineStartupCommand);
+	}
+
+	private function mapMediators():Void {
 		__mediatorMap.map(LoadingScreen).toMediator(LoadingScreenMediator);
 		__mediatorMap.map(StartControl).toMediator(StartControlMediator);
-
-		// __commandMap.map(AppEvent.AUDIO_ENGINE_STARTUP).toCommand(AudioEngineStartupCommand);
 	}
 }
