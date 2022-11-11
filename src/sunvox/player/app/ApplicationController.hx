@@ -9,18 +9,29 @@
 
 package sunvox.player.app;
 
+import org.swiftsuspenders.utils.DescribedType;
 import openfl.display.DisplayObjectContainer;
 import openfl.events.EventDispatcher;
 import robotlegs.bender.bundles.mvcs.MVCSBundle;
 import robotlegs.bender.extensions.contextView.ContextView;
+import robotlegs.bender.extensions.enhancedLogging.impl.TraceLogTarget;
+import robotlegs.bender.framework.api.ILogger;
+import robotlegs.bender.framework.api.LogLevel;
 import robotlegs.bender.framework.impl.Context;
 import signals.Signal;
 import sunvox.api.Lib;
 import sunvox.player.app.config.AppBundle;
 import sunvox.player.app.config.AppConfig;
 
-class ApplicationController extends EventDispatcher {
+@:keep
+class ApplicationController implements DescribedType {
 	private static var _rootContext:Context;
+
+	//-----------------------------------------------------------------------------
+	// Inject :: Variables
+	//-----------------------------------------------------------------------------
+	public var __logger:ILogger;
+
 	//-----------------------------------------------------------------------------
 	// Private :: Variables
 	//-----------------------------------------------------------------------------
@@ -65,9 +76,7 @@ class ApplicationController extends EventDispatcher {
 	//-----------------------------------------------------------------------------
 	// Constructor
 	//-----------------------------------------------------------------------------
-	public function new() {
-		super();
-	}
+	public function new() {}
 
 	//-----------------------------------------------------------------------------
 	// API :: Methods
@@ -82,13 +91,17 @@ class ApplicationController extends EventDispatcher {
 		__root = root;
 
 		_rootContext = new Context();
+		_rootContext.logLevel = LogLevel.DEBUG;
+		_rootContext.addLogTarget(new TraceLogTarget(_rootContext));
 
-		trace("_rootContext.install()");
-		_rootContext.install(MVCSBundle, AppBundle).configure(AppConfig).configure(new ContextView(__root));
+		var logger = _rootContext.getLogger(root);
+
+		logger.info("_rootContext.install()");
+		_rootContext.install(MVCSBundle, AppBundle).configure(AppConfig, new ContextView(__root));
 
 		_rootContext.get_injector().map(DisplayObjectContainer).toValue(__root);
 
-		trace("_rootContext.initialize()");
+		logger.info("_rootContext.initialize()");
 		_rootContext.initialize();
 
 		var applicationContext:ApplicationController = _rootContext.get_injector().getInstance(ApplicationController);
