@@ -22,11 +22,11 @@ class LoadingScreenMediator extends Mediator {
 	//-----------------------------------------------------------------------------
 	override function initialize() {
 		super.initialize();
-		view.onStartTriggered.add(view_onStartTriggered);
+		view.onUserActivity.add(view_onStartTriggered);
 	}
 
 	override function destroy() {
-		view.onStartTriggered.remove(view_onStartTriggered);
+		view.onUserActivity.remove(view_onStartTriggered);
 		super.destroy();
 	}
 

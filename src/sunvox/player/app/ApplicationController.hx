@@ -9,33 +9,24 @@
 
 package sunvox.player.app;
 
-import org.swiftsuspenders.utils.DescribedType;
+import feathers.layout.VerticalLayoutData;
 import openfl.display.DisplayObjectContainer;
-import openfl.events.EventDispatcher;
-import robotlegs.bender.bundles.mvcs.MVCSBundle;
-import robotlegs.bender.extensions.contextView.ContextView;
-import robotlegs.bender.extensions.enhancedLogging.impl.TraceLogTarget;
+import org.swiftsuspenders.utils.DescribedType;
 import robotlegs.bender.framework.api.ILogger;
-import robotlegs.bender.framework.api.LogLevel;
-import robotlegs.bender.framework.impl.Context;
 import signals.Signal;
 import sunvox.api.Lib;
-import sunvox.player.app.config.AppBundle;
-import sunvox.player.app.config.AppConfig;
+import sunvox.player.context.ui.screen.LoadingScreen;
 
 @:keep
 class ApplicationController implements DescribedType {
-	private static var _rootContext:Context;
-
-	//-----------------------------------------------------------------------------
-	// Inject :: Variables
-	//-----------------------------------------------------------------------------
-	public var __logger:ILogger;
+	private static var _applicationContext:ApplicationContext;
 
 	//-----------------------------------------------------------------------------
 	// Private :: Variables
 	//-----------------------------------------------------------------------------
-	private static var __root:Main;
+	private var _logger:ILogger;
+
+	private var loadingScreen:LoadingScreen;
 
 	private var sunVoxConfig:String = null;
 	private var sunVoxSampleRate:Int = 44100;
@@ -51,26 +42,31 @@ class ApplicationController implements DescribedType {
 	// API :: Properties
 	//-----------------------------------------------------------------------------
 	//-----------------------------------
+	// root
+	//-----------------------------------
+	public var root(default, null):DisplayObjectContainer;
+
+	//-----------------------------------
 	// isAudioEngineRunning
 	//-----------------------------------
-	private var _isAudioEngineRunning:Bool;
+	private var _hasUserActivity:Bool;
 
 	/**	 */
-	public var isAudioEngineRunning(get, set):Bool;
+	public var hasUserActivity(get, set):Bool;
 
-	private function get_isAudioEngineRunning():Bool {
-		return _isAudioEngineRunning;
+	private function get_hasUserActivity():Bool {
+		return _hasUserActivity;
 	}
 
-	private function set_isAudioEngineRunning(value:Bool):Bool {
-		if (_isAudioEngineRunning == value)
-			return _isAudioEngineRunning;
+	private function set_hasUserActivity(value:Bool):Bool {
+		if (_hasUserActivity == value)
+			return _hasUserActivity;
 
-		_isAudioEngineRunning = value;
+		_hasUserActivity = value;
 
 		onAudioEngineStateChange.dispatch();
 
-		return _isAudioEngineRunning;
+		return _hasUserActivity;
 	}
 
 	//-----------------------------------------------------------------------------
@@ -78,35 +74,26 @@ class ApplicationController implements DescribedType {
 	//-----------------------------------------------------------------------------
 	public function new() {}
 
-	//-----------------------------------------------------------------------------
+	//-------------------------------------------------------Z----------------------
 	// API :: Methods
 	//-----------------------------------------------------------------------------
 
 	/**
-		Creates the root `Context` using the root `DisplayObject`.
+		Creates and adds the first preloading screen, then creates the root 
+		`ApplicationContext` passing the root `DisplayObjectContainer`.
 
 		@param root `Main`
 	 */
-	public static function boot(root:Main):ApplicationController {
-		__root = root;
+	public function boot(root:Main):ApplicationContext {
+		this.root = root;
 
-		_rootContext = new Context();
-		_rootContext.logLevel = LogLevel.DEBUG;
-		_rootContext.addLogTarget(new TraceLogTarget(_rootContext));
+		preload();
 
-		var logger = _rootContext.getLogger(root);
+		_applicationContext = createApplicationContext();
 
-		logger.info("_rootContext.install()");
-		_rootContext.install(MVCSBundle, AppBundle).configure(AppConfig, new ContextView(__root));
+		_logger = _applicationContext.getLogger(this);
 
-		_rootContext.get_injector().map(DisplayObjectContainer).toValue(__root);
-
-		logger.info("_rootContext.initialize()");
-		_rootContext.initialize();
-
-		var applicationContext:ApplicationController = _rootContext.get_injector().getInstance(ApplicationController);
-
-		return applicationContext;
+		return _applicationContext;
 	}
 
 	/**
@@ -126,25 +113,43 @@ class ApplicationController implements DescribedType {
 	//-----------------------------------------------------------------------------
 	// Private :: Methods
 	//-----------------------------------------------------------------------------
+
+	private function preload():Void {
+		trace("Preload");
+
+		loadingScreen = new LoadingScreen();
+		loadingScreen.layoutData = new VerticalLayoutData(100, 100);
+		loadingScreen.onUserActivity.add(function():Void {
+			startAsync();
+		});
+
+		root.addChild(loadingScreen);
+	}
+
+	private function createApplicationContext() {
+		var context = new ApplicationContext(this);
+		return context;
+	}
+
 	private function status(message:String):Void {
 		trace(message);
 	}
 
 	private function initAudioEngineAsync():Void {
-		if (isAudioEngineRunning)
+		if (hasUserActivity)
 			return;
 
 		// Global sound system init
 		var ver:Int = Lib.sv_init(sunVoxConfig, sunVoxSampleRate, sunVoxNumChannels, sunVoxFlags);
 		if (ver >= 0) {
 			status("init ok");
-			isAudioEngineRunning = true;
+			hasUserActivity = true;
 		} else {
 			status("init error");
-			isAudioEngineRunning = false;
+			hasUserActivity = false;
 		}
 
-		if (isAudioEngineRunning) {
+		if (hasUserActivity) {
 			trace("AudioEngine loaded");
 		} else {
 			trace("AudioEngine not loaded");
@@ -152,7 +157,7 @@ class ApplicationController implements DescribedType {
 	}
 
 	public function clientGuesture() {
-		isAudioEngineRunning = true;
+		hasUserActivity = true;
 		// XXX AppEvent.AUDIO_ENGINE_COMPLETE
 	}
 }

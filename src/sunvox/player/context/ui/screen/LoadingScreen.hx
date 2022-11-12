@@ -25,27 +25,7 @@ class LoadingScreen extends LayoutGroup {
 	//-----------------------------------------------------------------------------
 	// API :: Signals
 	//-----------------------------------------------------------------------------
-	public var onStartTriggered:Signal = new Signal();
-
-	// /**
-	// 	@see `feathers.core.IUIControl.enabled`
-	// **/
-	// public var enabled(get, set):Bool;
-
-	// private function get_enabled():Bool {
-	// 	return _enabled;
-	// }
-
-	// private function set_enabled(value:Bool):Bool {
-	// 	if (_enabled == value) {
-	// 		return _enabled;
-	// 	}
-	// 	_enabled = value;
-
-	// 	setInvalid(STATE);
-
-	// 	return _enabled;
-	// }
+	public var onUserActivity:Signal = new Signal();
 
 	//-----------------------------------------------------------------------------
 	// Constructor
@@ -99,6 +79,6 @@ class LoadingScreen extends LayoutGroup {
 	//-----------------------------------------------------------------------------
 
 	private function startControl_triggerHandler(event:Event):Void {
-		onStartTriggered.dispatch();
+		onUserActivity.dispatch();
 	}
 }

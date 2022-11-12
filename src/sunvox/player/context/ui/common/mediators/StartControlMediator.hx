@@ -58,7 +58,7 @@ class StartControlMediator extends Mediator {
 	//-----------------------------------------------------------------------------
 
 	private function refreshView():Void {
-		var isRunning = __applicationController.isAudioEngineRunning;
+		var isRunning = __applicationController.hasUserActivity;
 		view.enabled = !isRunning;
 		view.text = isRunning ? "Audio Engine Started" : "Start Audio Engine";
 	}
