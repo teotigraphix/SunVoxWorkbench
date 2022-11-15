@@ -1,6 +1,6 @@
 /*
 	SunVox Workbench
-	
+
 	Copyright 2022 Teoti Graphix, LLC. All Rights Reserved.
 
 	This program is free software. You can redistribute and/or modify it in
@@ -16,6 +16,8 @@ import robotlegs.bender.framework.api.ILogger;
 import robotlegs.bender.framework.api.LogLevel;
 import robotlegs.bender.framework.impl.Context;
 import signals.Signal;
+import sunvox.app.bundles.SunVoxBundle;
+import sunvox.extensions.engine.core.SunVoxContext;
 import sunvox.player.app.config.AppBundle;
 import sunvox.player.app.config.AppConfig;
 
@@ -69,6 +71,14 @@ class ApplicationContext {
 		return _rootContext.getLogger(client);
 	}
 
+	/** */
+	public function startupAndRun():Void {
+		var sunVoxContext:SunVoxContext = _rootContext.injector.getInstance(SunVoxContext);
+		sunVoxContext.startAsync((success:Bool) -> {
+			trace('Audio Engine loaded: ${success}');
+		});
+	}
+
 	//-----------------------------------------------------------------------------
 	// Private :: Methods
 	//-----------------------------------------------------------------------------
@@ -82,7 +92,7 @@ class ApplicationContext {
 
 		_logger.info("_rootContext.install()");
 
-		_rootContext.install(MVCSBundle, AppBundle).configure(AppConfig, new ContextView(_applicationController.root));
+		_rootContext.install(MVCSBundle, AppBundle, SunVoxBundle).configure(AppConfig, new ContextView(_applicationController.root));
 
 		_logger.info("_rootContext.initialize()");
 		_rootContext.initialize();

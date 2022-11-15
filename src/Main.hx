@@ -12,6 +12,7 @@ package;
 import feathers.controls.Application;
 import feathers.layout.VerticalLayout;
 import feathers.style.Theme;
+import lime.utils.Log;
 import sunvox.player.app.ApplicationController;
 import sunvox.player.context.ui.theme.AppTheme;
 
@@ -26,6 +27,11 @@ class Main extends Application {
 	//-----------------------------------------------------------------------------
 	public function new() {
 		super();
+
+		// TODO BUG ???? Where is the Shader logging being activated in Lime?
+		Log.level = lime.utils.LogLevel.NONE;
+
+		trace("   Main");
 
 		_applicationController = new ApplicationController();
 

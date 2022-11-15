@@ -14,7 +14,6 @@ import openfl.display.DisplayObjectContainer;
 import org.swiftsuspenders.utils.DescribedType;
 import robotlegs.bender.framework.api.ILogger;
 import signals.Signal;
-import sunvox.api.Lib;
 import sunvox.player.context.ui.screen.LoadingScreen;
 
 @:keep
@@ -27,11 +26,6 @@ class ApplicationController implements DescribedType {
 	private var _logger:ILogger;
 
 	private var loadingScreen:LoadingScreen;
-
-	private var sunVoxConfig:String = null;
-	private var sunVoxSampleRate:Int = 44100;
-	private var sunVoxNumChannels:Int = 2;
-	private var sunVoxFlags:Int = 0;
 
 	//-----------------------------------------------------------------------------
 	// API :: Signals
@@ -87,27 +81,13 @@ class ApplicationController implements DescribedType {
 	public function boot(root:Main):ApplicationContext {
 		this.root = root;
 
-		preload();
-
 		_applicationContext = createApplicationContext();
 
 		_logger = _applicationContext.getLogger(this);
 
+		preload();
+
 		return _applicationContext;
-	}
-
-	/**
-		Starts the audio bootstrap initialization.
-
-		After the audio engine has been created and initialized, the application
-		model with be created and started. Once the operations are complete, the
-		`AUDIO_ENGINE_COMPLETE` signal will be broadcast.
-
-		@event `AUDIO_ENGINE_COMPLETE` The audio engine
-				has been initialized.
-	 */
-	public function startAsync():Void {
-		initAudioEngineAsync();
 	}
 
 	//-----------------------------------------------------------------------------
@@ -120,7 +100,7 @@ class ApplicationController implements DescribedType {
 		loadingScreen = new LoadingScreen();
 		loadingScreen.layoutData = new VerticalLayoutData(100, 100);
 		loadingScreen.onUserActivity.add(function():Void {
-			startAsync();
+			initAudioEngineAsync();
 		});
 
 		root.addChild(loadingScreen);
@@ -139,21 +119,7 @@ class ApplicationController implements DescribedType {
 		if (hasUserActivity)
 			return;
 
-		// Global sound system init
-		var ver:Int = Lib.sv_init(sunVoxConfig, sunVoxSampleRate, sunVoxNumChannels, sunVoxFlags);
-		if (ver >= 0) {
-			status("init ok");
-			hasUserActivity = true;
-		} else {
-			status("init error");
-			hasUserActivity = false;
-		}
-
-		if (hasUserActivity) {
-			trace("AudioEngine loaded");
-		} else {
-			trace("AudioEngine not loaded");
-		}
+		_applicationContext.startupAndRun();
 	}
 
 	public function clientGuesture() {
