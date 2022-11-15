@@ -9,9 +9,8 @@
 
 package sunvox.player.app.config;
 
-import openfl.events.IEventDispatcher;
 import openfl.events.Event;
-import openfl.events.EventDispatcher;
+import openfl.events.IEventDispatcher;
 import org.swiftsuspenders.utils.DescribedType;
 import robotlegs.bender.extensions.contextView.ContextView;
 import robotlegs.bender.extensions.eventCommandMap.api.IEventCommandMap;

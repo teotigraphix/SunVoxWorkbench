@@ -13,7 +13,6 @@ import robotlegs.bender.bundles.mvcs.MVCSBundle;
 import robotlegs.bender.extensions.contextView.ContextView;
 import robotlegs.bender.extensions.enhancedLogging.impl.TraceLogTarget;
 import robotlegs.bender.framework.api.ILogger;
-import robotlegs.bender.framework.api.LogLevel;
 import robotlegs.bender.framework.impl.Context;
 import signals.Signal;
 import sunvox.app.bundles.SunVoxBundle;
@@ -85,7 +84,6 @@ class ApplicationContext {
 
 	private function createContainerContext():Void {
 		_rootContext = new Context();
-		_rootContext.logLevel = LogLevel.DEBUG;
 		_rootContext.addLogTarget(new TraceLogTarget(_rootContext));
 
 		_logger = _rootContext.getLogger(this);

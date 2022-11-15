@@ -23,7 +23,7 @@ class AppBundle implements IBundle {
 	// IBundle :: Methods
 	//-----------------------------------------------------------------------------
 	public function extend(context:IContext):Void {
-		context.logLevel = LogLevel.DEBUG;
+		context.logLevel = LogLevel.INFO;
 
 		context.install(GlobalExtension);
 	}
