@@ -47,6 +47,5 @@ class PlayListListData {
 
 	/** */
 	public function new() {
-		super();
 	}
 }

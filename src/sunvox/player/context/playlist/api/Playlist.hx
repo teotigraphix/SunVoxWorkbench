@@ -7,7 +7,7 @@
 	accordance with the terms of the accompanying license agreement.
  */
 
-package sunsunvox.player.context.common.ui.api.vo;
+package sunsunvox.player.context.common.ui.api;
 
 class Playlist {
 	public var uid:String;
