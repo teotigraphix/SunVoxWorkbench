@@ -12,6 +12,7 @@ package sunvox.player.app.config;
 import robotlegs.bender.framework.api.IBundle;
 import robotlegs.bender.framework.api.IContext;
 import robotlegs.bender.framework.api.LogLevel;
+import teoti.extensions.filesystem.FileSystemExtension;
 
 class AppBundle implements IBundle {
 	//-----------------------------------------------------------------------------
@@ -26,5 +27,6 @@ class AppBundle implements IBundle {
 		context.logLevel = LogLevel.INFO;
 
 		context.install(GlobalExtension);
+		context.install(FileSystemExtension);
 	}
 }
